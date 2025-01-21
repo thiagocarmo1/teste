@@ -1,0 +1,1383 @@
+{
+	"info": {
+		"_postman_id": "15406649-e5e9-4aa7-9f2b-3e793064d730",
+		"name": "1- Fluxo abrir serviço /home/monitor",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "36428944"
+	},
+	"item": [
+		{
+			"name": "preService",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"const postRequest = {\r",
+							"    url: \"https://sso.mottu.io/realms/Admin/protocol/openid-connect/token\",\r",
+							"    method: \"POST\",\r",
+							"    header: {\r",
+							"        \"Content-Type\": \"application/x-www-form-urlencoded\"\r",
+							"    },\r",
+							"    body: {\r",
+							"        mode: \"urlencoded\",\r",
+							"        urlencoded: [\r",
+							"            { key: \"client_id\", value: \"mottu-admin\" },\r",
+							"            { key: \"username\", value: \"admin.monitor@mottu.dev\" },\r",
+							"            { key: \"grant_type\", value: \"password\" },\r",
+							"            { key: \"password\", value: \"mottu@1234\" }\r",
+							"        ]\r",
+							"    }\r",
+							"};\r",
+							"\r",
+							"pm.sendRequest(postRequest, function (err, res) {\r",
+							"    if (err) {\r",
+							"        console.error(\"Request error:\", err);\r",
+							"        return;\r",
+							"    }\r",
+							"    \r",
+							"    const accessToken = res.json().access_token;\r",
+							"    pm.environment.set('access_token', 'Bearer ' + accessToken);\r",
+							"});\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Token obtido com sucesso\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"    var jsonData = pm.response.json();\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Tempo de resposta adequado\", function () {\r",
+							"    pm.expect(pm.response.responseTime).to.be.below(2000);\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "sec-ch-ua-platform",
+						"value": "\"Windows\""
+					},
+					{
+						"key": "Authorization",
+						"value": "{{access_token}}"
+					},
+					{
+						"key": "Referer",
+						"value": "https://monitor.mottu.io/"
+					},
+					{
+						"key": "sec-ch-ua",
+						"value": "\"Google Chrome\";v=\"131\", \"Chromium\";v=\"131\", \"Not_A Brand\";v=\"24\""
+					},
+					{
+						"key": "sec-ch-ua-mobile",
+						"value": "?0"
+					},
+					{
+						"key": "User-Agent",
+						"value": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36"
+					},
+					{
+						"key": "Accept",
+						"value": "application/json, text/plain, */*"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"action\": \"Pesquisa de Ve^ículo\",\r\n    \"applicationName\": \"monitor\",\r\n    \"entityId\": \"686000\",\r\n    \"entityType\": \"UsuarioId\",\r\n    \"ip\": \"\",\r\n    \"locatarioId\": 686000\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{backend-monitor}}/api/v1/IAM/audit-user",
+					"host": [
+						"{{backend-monitor}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"IAM",
+						"audit-user"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "viewAccess",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"// Array de clientes com seus respectivos ids\r",
+							"var clientes = [\r",
+							"    {\"usuarioid\":\"685912\",\"veiculoid\":\"49792\"},{\"usuarioid\":\"686147\",\"veiculoid\":\"49898\"},{\"usuarioid\":\"676503\",\"veiculoid\":\"43341\"},{\"usuarioid\":\"686098\",\"veiculoid\":\"49891\"},{\"usuarioid\":\"686101\",\"veiculoid\":\"49895\"},{\"usuarioid\":\"686000\",\"veiculoid\":\"49843\"},{\"usuarioid\":\"683197\",\"veiculoid\":\"48365\"},{\"usuarioid\":\"683074\",\"veiculoid\":\"48262\"},{\"usuarioid\":\"686051\",\"veiculoid\":\"49874\"},{\"usuarioid\":\"685985\",\"veiculoid\":\"49833\"},{\"usuarioid\":\"685985\",\"veiculoid\":\"49833\"},{\"usuarioid\":\"685781\",\"veiculoid\":\"49682\"},{\"usuarioid\":\"685926\",\"veiculoid\":\"49797\"},{\"usuarioid\":\"685927\",\"veiculoid\":\"49798\"},{\"usuarioid\":\"685928\",\"veiculoid\":\"49799\"},{\"usuarioid\":\"685911\",\"veiculoid\":\"49791\"},{\"usuarioid\":\"685779\",\"veiculoid\":\"49680\"},{\"usuarioid\":\"685865\",\"veiculoid\":\"49756\"},{\"usuarioid\":\"685865\",\"veiculoid\":\"49756\"},{\"usuarioid\":\"643273\",\"veiculoid\":\"16236\"},{\"usuarioid\":\"685865\",\"veiculoid\":\"49756\"},{\"usuarioid\":\"685661\",\"veiculoid\":\"49572\"},{\"usuarioid\":\"685022\",\"veiculoid\":\"49281\"},{\"usuarioid\":\"685058\",\"veiculoid\":\"49287\"},{\"usuarioid\":\"200000\",\"veiculoid\":\"49153\"},{\"usuarioid\":\"685045\",\"veiculoid\":\"49285\"},{\"usuarioid\":\"622709\",\"veiculoid\":\"251\"},{\"usuarioid\":\"383659\",\"veiculoid\":\"20328\"},{\"usuarioid\":\"684170\",\"veiculoid\":\"49088\"},{\"usuarioid\":\"685574\",\"veiculoid\":\"49488\"},{\"usuarioid\":\"685575\",\"veiculoid\":\"49489\"},{\"usuarioid\":\"685755\",\"veiculoid\":\"49662\"},{\"usuarioid\":\"685755\",\"veiculoid\":\"49662\"},{\"usuarioid\":\"684030\",\"veiculoid\":\"48552\"},{\"usuarioid\":\"684030\",\"veiculoid\":\"49070\"},{\"usuarioid\":\"685459\",\"veiculoid\":\"49392\"},{\"usuarioid\":\"684150\",\"veiculoid\":\"49083\"},{\"usuarioid\":\"684030\",\"veiculoid\":\"48552\"},{\"usuarioid\":\"685390\",\"veiculoid\":\"49334\"},{\"usuarioid\":\"685390\",\"veiculoid\":\"49334\"},{\"usuarioid\":\"684686\",\"veiculoid\":\"49209\"},{\"usuarioid\":\"685390\",\"veiculoid\":\"49334\"},{\"usuarioid\":\"669020\",\"veiculoid\":\"25896\"},{\"usuarioid\":\"684326\",\"veiculoid\":\"49118\"},{\"usuarioid\":\"651622\",\"veiculoid\":\"24671\"},{\"usuarioid\":\"640948\",\"veiculoid\":\"3120\"},{\"usuarioid\":\"640948\",\"veiculoid\":\"3120\"},{\"usuarioid\":\"675599\",\"veiculoid\":\"42383\"},{\"usuarioid\":\"675504\",\"veiculoid\":\"42268\"},{\"usuarioid\":\"685379\",\"veiculoid\":\"49327\"},{\"usuarioid\":\"685378\",\"veiculoid\":\"49326\"},{\"usuarioid\":\"684721\",\"veiculoid\":\"49221\"},{\"usuarioid\":\"509939\",\"veiculoid\":\"2792\"},{\"usuarioid\":\"509939\",\"veiculoid\":\"2792\"},{\"usuarioid\":\"509939\",\"veiculoid\":\"2792\"},{\"usuarioid\":\"509939\",\"veiculoid\":\"2792\"},{\"usuarioid\":\"509939\",\"veiculoid\":\"2792\"},{\"usuarioid\":\"2145\",\"veiculoid\":\"49293\"},{\"usuarioid\":\"133231\",\"veiculoid\":\"1955\"},{\"usuarioid\":\"684340\",\"veiculoid\":\"49128\"},{\"usuarioid\":\"684333\",\"veiculoid\":\"49124\"},{\"usuarioid\":\"684994\",\"veiculoid\":\"49263\"},{\"usuarioid\":\"683798\",\"veiculoid\":\"48948\"},{\"usuarioid\":\"582176\",\"veiculoid\":\"25515\"},{\"usuarioid\":\"582176\",\"veiculoid\":\"25515\"},{\"usuarioid\":\"582176\",\"veiculoid\":\"25515\"},{\"usuarioid\":\"684354\",\"veiculoid\":\"49143\"},{\"usuarioid\":\"684464\",\"veiculoid\":\"49197\"},{\"usuarioid\":\"373205\",\"veiculoid\":\"33593\"},{\"usuarioid\":\"624072\",\"veiculoid\":\"642\"},{\"usuarioid\":\"683859\",\"veiculoid\":\"48428\"},{\"usuarioid\":\"682804\",\"veiculoid\":\"48034\"},{\"usuarioid\":\"684251\",\"veiculoid\":\"49094\"},{\"usuarioid\":\"683657\",\"veiculoid\":\"48812\"},{\"usuarioid\":\"683658\",\"veiculoid\":\"48817\"},{\"usuarioid\":\"683863\",\"veiculoid\":\"49013\"},{\"usuarioid\":\"603236\",\"veiculoid\":\"33346\"},{\"usuarioid\":\"545553\",\"veiculoid\":\"30797\"},{\"usuarioid\":\"683484\",\"veiculoid\":\"48595\"},{\"usuarioid\":\"683840\",\"veiculoid\":\"48986\"},{\"usuarioid\":\"643658\",\"veiculoid\":\"34903\"},{\"usuarioid\":\"649120\",\"veiculoid\":\"32193\"},{\"usuarioid\":\"682952\",\"veiculoid\":\"48151\"},{\"usuarioid\":\"683310\",\"veiculoid\":\"48465\"},{\"usuarioid\":\"683565\",\"veiculoid\":\"48689\"},{\"usuarioid\":\"119936\",\"veiculoid\":\"19672\"},{\"usuarioid\":\"2\",\"veiculoid\":\"29048\"},{\"usuarioid\":\"683264\",\"veiculoid\":\"48432\"},{\"usuarioid\":\"683602\",\"veiculoid\":\"48759\"},{\"usuarioid\":\"683603\",\"veiculoid\":\"48760\"},{\"usuarioid\":\"683605\",\"veiculoid\":\"48762\"},{\"usuarioid\":\"683607\",\"veiculoid\":\"48764\"},{\"usuarioid\":\"683624\",\"veiculoid\":\"48778\"},{\"usuarioid\":\"683629\",\"veiculoid\":\"48783\"},{\"usuarioid\":\"683630\",\"veiculoid\":\"48784\"},{\"usuarioid\":\"683633\",\"veiculoid\":\"48786\"},{\"usuarioid\":\"683638\",\"veiculoid\":\"48788\"},{\"usuarioid\":\"683625\",\"veiculoid\":\"48779\"},{\"usuarioid\":\"683245\",\"veiculoid\":\"4214\"},{\"usuarioid\":\"683245\",\"veiculoid\":\"4214\"},{\"usuarioid\":\"634307\",\"veiculoid\":\"20243\"},{\"usuarioid\":\"672419\",\"veiculoid\":\"39565\"},{\"usuarioid\":\"648480\",\"veiculoid\":\"29033\"},{\"usuarioid\":\"169465\",\"veiculoid\":\"17775\"},{\"usuarioid\":\"682179\",\"veiculoid\":\"48552\"},{\"usuarioid\":\"682116\",\"veiculoid\":\"47485\"},{\"usuarioid\":\"683452\",\"veiculoid\":\"13930\"},{\"usuarioid\":\"682179\",\"veiculoid\":\"47924\"},{\"usuarioid\":\"682179\",\"veiculoid\":\"47550\"},{\"usuarioid\":\"683284\",\"veiculoid\":\"48447\"},{\"usuarioid\":\"683373\",\"veiculoid\":\"48519\"},{\"usuarioid\":\"683441\",\"veiculoid\":\"48571\"},{\"usuarioid\":\"683327\",\"veiculoid\":\"48479\"},{\"usuarioid\":\"649120\",\"veiculoid\":\"32193\"},{\"usuarioid\":\"649120\",\"veiculoid\":\"32193\"},{\"usuarioid\":\"683268\",\"veiculoid\":\"48438\"},{\"usuarioid\":\"683312\",\"veiculoid\":\"48467\"},{\"usuarioid\":\"683342\",\"veiculoid\":\"48502\"},{\"usuarioid\":\"683417\",\"veiculoid\":\"48547\"},{\"usuarioid\":\"683425\",\"veiculoid\":\"48556\"},{\"usuarioid\":\"683416\",\"veiculoid\":\"10772\"},{\"usuarioid\":\"683409\",\"veiculoid\":\"48539\"},{\"usuarioid\":\"683412\",\"veiculoid\":\"11297\"},{\"usuarioid\":\"683025\",\"veiculoid\":\"48217\"},{\"usuarioid\":\"429535\",\"veiculoid\":\"16897\"},{\"usuarioid\":\"377012\",\"veiculoid\":\"33008\"},{\"usuarioid\":\"243034\",\"veiculoid\":\"8379\"},{\"usuarioid\":\"682919\",\"veiculoid\":\"48125\"},{\"usuarioid\":\"558135\",\"veiculoid\":\"3351\"},{\"usuarioid\":\"619728\",\"veiculoid\":\"29133\"},{\"usuarioid\":\"586627\",\"veiculoid\":\"16941\"},{\"usuarioid\":\"611106\",\"veiculoid\":\"2332\"},{\"usuarioid\":\"682839\",\"veiculoid\":\"48076\"},{\"usuarioid\":\"655588\",\"veiculoid\":\"28594\"},{\"usuarioid\":\"649120\",\"veiculoid\":\"32193\"},{\"usuarioid\":\"683293\",\"veiculoid\":\"48453\"},{\"usuarioid\":\"681487\",\"veiculoid\":\"47133\"},{\"usuarioid\":\"672637\",\"veiculoid\":\"39738\"},{\"usuarioid\":\"641022\",\"veiculoid\":\"32856\"},{\"usuarioid\":\"577807\",\"veiculoid\":\"14634\"},{\"usuarioid\":\"683263\",\"veiculoid\":\"48431\"},{\"usuarioid\":\"620133\",\"veiculoid\":\"32607\"},{\"usuarioid\":\"635956\",\"veiculoid\":\"24201\"},{\"usuarioid\":\"675379\",\"veiculoid\":\"42169\"},{\"usuarioid\":\"676519\",\"veiculoid\":\"43360\"},{\"usuarioid\":\"678348\",\"veiculoid\":\"44499\"},{\"usuarioid\":\"682970\",\"veiculoid\":\"48161\"},{\"usuarioid\":\"683306\",\"veiculoid\":\"48462\"},{\"usuarioid\":\"683085\",\"veiculoid\":\"48270\"},{\"usuarioid\":\"683121\",\"veiculoid\":\"48299\"},{\"usuarioid\":\"683073\",\"veiculoid\":\"48261\"}\r",
+							"];\r",
+							"\r",
+							"// Seleção aleatória de um cliente\r",
+							"var randomCliente = clientes[Math.floor(Math.random() * clientes.length)];\r",
+							"\r",
+							"// Definir as variáveis de usuário e veículo no Postman\r",
+							"pm.environment.set(\"usuarioid\", randomCliente.usuarioid);\r",
+							"pm.environment.set(\"veiculoid\", randomCliente.veiculoid);\r",
+							"\r",
+							"// Para depuração, mostra os ids no console\r",
+							"console.log(\"usuarioid selecionado:\", randomCliente.usuarioid);\r",
+							"console.log(\"veiculoid selecionado:\", randomCliente.veiculoid);\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Variáveis de usuário e veículo foram definidas corretamente\", function () {\r",
+							"    var usuarioid = pm.environment.get(\"usuarioid\");\r",
+							"    var veiculoid = pm.environment.get(\"veiculoid\");\r",
+							"\r",
+							"    pm.expect(usuarioid).to.not.be.undefined;\r",
+							"    pm.expect(usuarioid).to.be.a(\"string\");\r",
+							"\r",
+							"    pm.expect(veiculoid).to.not.be.undefined;\r",
+							"    pm.expect(veiculoid).to.be.a(\"string\");\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "sec-ch-ua-platform",
+						"value": "\"Windows\""
+					},
+					{
+						"key": "Authorization",
+						"value": "{{access_token}}"
+					},
+					{
+						"key": "Referer",
+						"value": "https://monitor.mottu.io/"
+					},
+					{
+						"key": "User-Agent",
+						"value": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36"
+					},
+					{
+						"key": "Accept",
+						"value": "application/json, text/plain, */*"
+					},
+					{
+						"key": "sec-ch-ua",
+						"value": "\"Google Chrome\";v=\"131\", \"Chromium\";v=\"131\", \"Not_A Brand\";v=\"24\""
+					},
+					{
+						"key": "sec-ch-ua-mobile",
+						"value": "?0"
+					}
+				],
+				"url": {
+					"raw": "{{customer-success}}/api/v1/MottuAdmin/users/{{usuarioid}}/view-access",
+					"host": [
+						"{{customer-success}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"MottuAdmin",
+						"users",
+						"{{usuarioid}}",
+						"view-access"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "veiculo",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "sec-ch-ua-platform",
+						"value": "\"Android\""
+					},
+					{
+						"key": "Authorization",
+						"value": "{{access_token}}"
+					},
+					{
+						"key": "Referer",
+						"value": "https://monitor.mottu.io/"
+					},
+					{
+						"key": "User-Agent",
+						"value": "Mozilla/5.0 (Linux; Android 7.0; SM-G950U Build/NRD90M) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.84 Mobile Safari/537.36"
+					},
+					{
+						"key": "Accept",
+						"value": "application/json, text/plain, */*"
+					},
+					{
+						"key": "sec-ch-ua",
+						"value": "\"Google Chrome\";v=\"131\", \"Chromium\";v=\"131\", \"Not_A Brand\";v=\"24\""
+					},
+					{
+						"key": "sec-ch-ua-mobile",
+						"value": "?1"
+					}
+				],
+				"url": {
+					"raw": "{{backend-monitor}}/api/v1/veiculo/mapa?veiculoId={{veiculoid}}",
+					"host": [
+						"{{backend-monitor}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"veiculo",
+						"mapa"
+					],
+					"query": [
+						{
+							"key": "veiculoId",
+							"value": "{{veiculoid}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "ordemBloqueio",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "sec-ch-ua-platform",
+						"value": "\"Android\""
+					},
+					{
+						"key": "Authorization",
+						"value": "{{access_token}}"
+					},
+					{
+						"key": "Referer",
+						"value": "https://monitor.mottu.io/"
+					},
+					{
+						"key": "User-Agent",
+						"value": "Mozilla/5.0 (Linux; Android 7.0; SM-G950U Build/NRD90M) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.84 Mobile Safari/537.36"
+					},
+					{
+						"key": "Accept",
+						"value": "application/json, text/plain, */*"
+					},
+					{
+						"key": "sec-ch-ua",
+						"value": "\"Google Chrome\";v=\"131\", \"Chromium\";v=\"131\", \"Not_A Brand\";v=\"24\""
+					},
+					{
+						"key": "sec-ch-ua-mobile",
+						"value": "?1"
+					}
+				],
+				"url": {
+					"raw": "{{backend-monitor}}/api/v1/OrdemBloqueioDesbloqueio/ultimaByVeiculoId/{{veiculoid}}",
+					"host": [
+						"{{backend-monitor}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"OrdemBloqueioDesbloqueio",
+						"ultimaByVeiculoId",
+						"{{veiculoid}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "localização",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "sec-ch-ua-platform",
+						"value": "\"Android\""
+					},
+					{
+						"key": "Authorization",
+						"value": "{{access_token}}"
+					},
+					{
+						"key": "Referer",
+						"value": "https://monitor.mottu.io/"
+					},
+					{
+						"key": "User-Agent",
+						"value": "Mozilla/5.0 (Linux; Android 7.0; SM-G950U Build/NRD90M) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.84 Mobile Safari/537.36"
+					},
+					{
+						"key": "Accept",
+						"value": "application/json, text/plain, */*"
+					},
+					{
+						"key": "sec-ch-ua",
+						"value": "\"Google Chrome\";v=\"131\", \"Chromium\";v=\"131\", \"Not_A Brand\";v=\"24\""
+					},
+					{
+						"key": "sec-ch-ua-mobile",
+						"value": "?1"
+					}
+				],
+				"url": {
+					"raw": "{{backend-monitor}}/api/v1/veiculo/{{veiculoid}}/localizacao",
+					"host": [
+						"{{backend-monitor}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"veiculo",
+						"{{veiculoid}}",
+						"localizacao"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "usuario",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "sec-ch-ua-platform",
+						"value": "\"Android\""
+					},
+					{
+						"key": "Authorization",
+						"value": "{{access_token}}"
+					},
+					{
+						"key": "Referer",
+						"value": "https://monitor.mottu.io/"
+					},
+					{
+						"key": "User-Agent",
+						"value": "Mozilla/5.0 (Linux; Android 7.0; SM-G950U Build/NRD90M) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.84 Mobile Safari/537.36"
+					},
+					{
+						"key": "Accept",
+						"value": "application/json, text/plain, */*"
+					},
+					{
+						"key": "sec-ch-ua",
+						"value": "\"Google Chrome\";v=\"131\", \"Chromium\";v=\"131\", \"Not_A Brand\";v=\"24\""
+					},
+					{
+						"key": "sec-ch-ua-mobile",
+						"value": "?1"
+					}
+				],
+				"url": {
+					"raw": "{{backend-monitor}}/api/v1/EnderecoVirtual/v2/usuario/{{usuarioid}}",
+					"host": [
+						"{{backend-monitor}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"EnderecoVirtual",
+						"v2",
+						"usuario",
+						"{{usuarioid}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "localizacao",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "sec-ch-ua-platform",
+						"value": "\"Android\""
+					},
+					{
+						"key": "Authorization",
+						"value": "{{access_token}}"
+					},
+					{
+						"key": "Referer",
+						"value": "https://monitor.mottu.io/"
+					},
+					{
+						"key": "User-Agent",
+						"value": "Mozilla/5.0 (Linux; Android 7.0; SM-G950U Build/NRD90M) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.84 Mobile Safari/537.36"
+					},
+					{
+						"key": "Accept",
+						"value": "application/json, text/plain, */*"
+					},
+					{
+						"key": "sec-ch-ua",
+						"value": "\"Google Chrome\";v=\"131\", \"Chromium\";v=\"131\", \"Not_A Brand\";v=\"24\""
+					},
+					{
+						"key": "sec-ch-ua-mobile",
+						"value": "?1"
+					}
+				],
+				"url": {
+					"raw": "{{backend-monitor}}/api/v1/veiculo/{{veiculoid}}/localizacao?padrao=nomeado&openCellEnabled=false",
+					"host": [
+						"{{backend-monitor}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"veiculo",
+						"{{veiculoid}}",
+						"localizacao"
+					],
+					"query": [
+						{
+							"key": "padrao",
+							"value": "nomeado"
+						},
+						{
+							"key": "openCellEnabled",
+							"value": "false"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "localizacao",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "sec-ch-ua-platform",
+						"value": "\"Android\""
+					},
+					{
+						"key": "Authorization",
+						"value": "{{access_token}}"
+					},
+					{
+						"key": "Referer",
+						"value": "https://monitor.mottu.io/"
+					},
+					{
+						"key": "User-Agent",
+						"value": "Mozilla/5.0 (Linux; Android 7.0; SM-G950U Build/NRD90M) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.84 Mobile Safari/537.36"
+					},
+					{
+						"key": "Accept",
+						"value": "application/json, text/plain, */*"
+					},
+					{
+						"key": "sec-ch-ua",
+						"value": "\"Google Chrome\";v=\"131\", \"Chromium\";v=\"131\", \"Not_A Brand\";v=\"24\""
+					},
+					{
+						"key": "sec-ch-ua-mobile",
+						"value": "?1"
+					}
+				],
+				"url": {
+					"raw": "{{backend-monitor}}/api/v1/veiculo/{{veiculoid}}/localizacao",
+					"host": [
+						"{{backend-monitor}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"veiculo",
+						"{{veiculoid}}",
+						"localizacao"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "existenotificacao",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "sec-ch-ua-platform",
+						"value": "\"Android\""
+					},
+					{
+						"key": "Authorization",
+						"value": "{{access_token}}"
+					},
+					{
+						"key": "Referer",
+						"value": "https://monitor.mottu.io/"
+					},
+					{
+						"key": "User-Agent",
+						"value": "Mozilla/5.0 (Linux; Android 7.0; SM-G950U Build/NRD90M) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.84 Mobile Safari/537.36"
+					},
+					{
+						"key": "Accept",
+						"value": "application/json, text/plain, */*"
+					},
+					{
+						"key": "sec-ch-ua",
+						"value": "\"Google Chrome\";v=\"131\", \"Chromium\";v=\"131\", \"Not_A Brand\";v=\"24\""
+					},
+					{
+						"key": "sec-ch-ua-mobile",
+						"value": "?1"
+					}
+				],
+				"url": {
+					"raw": "{{backend-monitor}}/api/v1/MonitoramentoMovimentacaoVeiculo/existenotificacao/{{veiculoid}}/UWQ-7T40",
+					"host": [
+						"{{backend-monitor}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"MonitoramentoMovimentacaoVeiculo",
+						"existenotificacao",
+						"{{veiculoid}}",
+						"UWQ-7T40"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "usuario",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "sec-ch-ua-platform",
+						"value": "\"Android\""
+					},
+					{
+						"key": "Authorization",
+						"value": "{{access_token}}"
+					},
+					{
+						"key": "Referer",
+						"value": "https://monitor.mottu.io/"
+					},
+					{
+						"key": "User-Agent",
+						"value": "Mozilla/5.0 (Linux; Android 7.0; SM-G950U Build/NRD90M) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.84 Mobile Safari/537.36"
+					},
+					{
+						"key": "Accept",
+						"value": "application/json, text/plain, */*"
+					},
+					{
+						"key": "sec-ch-ua",
+						"value": "\"Google Chrome\";v=\"131\", \"Chromium\";v=\"131\", \"Not_A Brand\";v=\"24\""
+					},
+					{
+						"key": "sec-ch-ua-mobile",
+						"value": "?1"
+					}
+				],
+				"url": {
+					"raw": "{{backend-monitor}}/api/v1/EnderecoVirtual/v2/usuario/{{usuarioid}}",
+					"host": [
+						"{{backend-monitor}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"EnderecoVirtual",
+						"v2",
+						"usuario",
+						"{{usuarioid}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "locatario-details",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "accept",
+						"value": "application/json, text/plain, */*"
+					},
+					{
+						"key": "accept-language",
+						"value": "pt-BR,pt;q=0.9,en-US;q=0.8,en;q=0.7"
+					},
+					{
+						"key": "authorization",
+						"value": "{{access_token}}"
+					},
+					{
+						"key": "origin",
+						"value": "https://fleet-us-fs-14.monitor-front.pages.dev"
+					},
+					{
+						"key": "priority",
+						"value": "u=1, i"
+					},
+					{
+						"key": "referer",
+						"value": "https://fleet-us-fs-14.monitor-front.pages.dev/"
+					},
+					{
+						"key": "sec-ch-ua",
+						"value": "\"Google Chrome\";v=\"131\", \"Chromium\";v=\"131\", \"Not_A Brand\";v=\"24\""
+					},
+					{
+						"key": "sec-ch-ua-mobile",
+						"value": "?1"
+					},
+					{
+						"key": "sec-ch-ua-platform",
+						"value": "\"Android\""
+					},
+					{
+						"key": "sec-fetch-dest",
+						"value": "empty"
+					},
+					{
+						"key": "sec-fetch-mode",
+						"value": "cors"
+					},
+					{
+						"key": "sec-fetch-site",
+						"value": "cross-site"
+					},
+					{
+						"key": "user-agent",
+						"value": "Mozilla/5.0 (Linux; Android 7.0; SM-G950U Build/NRD90M) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.84 Mobile Safari/537.36"
+					}
+				],
+				"url": {
+					"raw": "{{backend-monitor}}/api/v1/Veiculo/locatario-details/{{usuarioid}}",
+					"host": [
+						"{{backend-monitor}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"Veiculo",
+						"locatario-details",
+						"{{usuarioid}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "localizacao",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "sec-ch-ua-platform",
+						"value": "\"Android\""
+					},
+					{
+						"key": "Authorization",
+						"value": "{{access_token}}"
+					},
+					{
+						"key": "Referer",
+						"value": "https://monitor.mottu.io/"
+					},
+					{
+						"key": "User-Agent",
+						"value": "Mozilla/5.0 (Linux; Android 7.0; SM-G950U Build/NRD90M) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.84 Mobile Safari/537.36"
+					},
+					{
+						"key": "Accept",
+						"value": "application/json, text/plain, */*"
+					},
+					{
+						"key": "sec-ch-ua",
+						"value": "\"Google Chrome\";v=\"131\", \"Chromium\";v=\"131\", \"Not_A Brand\";v=\"24\""
+					},
+					{
+						"key": "sec-ch-ua-mobile",
+						"value": "?1"
+					}
+				],
+				"url": {
+					"raw": "{{backend-monitor}}/api/v1/veiculo/{{veiculoid}}/localizacao",
+					"host": [
+						"{{backend-monitor}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"veiculo",
+						"{{veiculoid}}",
+						"localizacao"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "tags",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "sec-ch-ua-platform",
+						"value": "\"Android\""
+					},
+					{
+						"key": "Authorization",
+						"value": "{{access_token}}"
+					},
+					{
+						"key": "Referer",
+						"value": "https://monitor.mottu.io/"
+					},
+					{
+						"key": "User-Agent",
+						"value": "Mozilla/5.0 (Linux; Android 7.0; SM-G950U Build/NRD90M) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.84 Mobile Safari/537.36"
+					},
+					{
+						"key": "Accept",
+						"value": "application/json, text/plain, */*"
+					},
+					{
+						"key": "sec-ch-ua",
+						"value": "\"Google Chrome\";v=\"131\", \"Chromium\";v=\"131\", \"Not_A Brand\";v=\"24\""
+					},
+					{
+						"key": "sec-ch-ua-mobile",
+						"value": "?1"
+					}
+				],
+				"url": {
+					"raw": "{{backend-monitor}}/api/v1/Servico/tags",
+					"host": [
+						"{{backend-monitor}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"Servico",
+						"tags"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "servicoTipo",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "sec-ch-ua-platform",
+						"value": "\"Android\""
+					},
+					{
+						"key": "Authorization",
+						"value": "{{access_token}}"
+					},
+					{
+						"key": "Referer",
+						"value": "https://monitor.mottu.io/"
+					},
+					{
+						"key": "User-Agent",
+						"value": "Mozilla/5.0 (Linux; Android 7.0; SM-G950U Build/NRD90M) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.84 Mobile Safari/537.36"
+					},
+					{
+						"key": "Accept",
+						"value": "application/json, text/plain, */*"
+					},
+					{
+						"key": "sec-ch-ua",
+						"value": "\"Google Chrome\";v=\"131\", \"Chromium\";v=\"131\", \"Not_A Brand\";v=\"24\""
+					},
+					{
+						"key": "sec-ch-ua-mobile",
+						"value": "?1"
+					}
+				],
+				"url": {
+					"raw": "{{backend-monitor}}/api/v1/Servico/tipo",
+					"host": [
+						"{{backend-monitor}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"Servico",
+						"tipo"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "AreaCobertura",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status 200\", function () {",
+							"  pm.expect(pm.response.code).to.equal(200);",
+							"});",
+							"",
+							"",
+							"pm.test(\"Estrutura da array correta\", function () {",
+							"    const responseData = pm.response.json();",
+							"",
+							"    pm.expect(responseData.dataResult).to.be.an('array').and.to.have.lengthOf.at.least(1, \"Array não pode ser vazia\");",
+							"",
+							"    responseData.dataResult.forEach(function(item) {",
+							"        pm.expect(item).to.have.property('id').that.is.a('number');",
+							"        pm.expect(item).to.have.property('latitude').that.is.a('number');",
+							"        pm.expect(item).to.have.property('longitude').that.is.a('number');",
+							"        pm.expect(item).to.have.property('nome').that.is.a('string');",
+							"        pm.expect(item).to.have.property('regionId').that.is.a('string');",
+							"        pm.expect(item).to.have.property('areaCobertura').that.is.an('object');",
+							"        pm.expect(item).to.have.property('areaCirculacao').that.is.an('object');",
+							"    });",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"packages": {},
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "accept",
+						"value": "text/plain"
+					},
+					{
+						"key": "Authorization",
+						"value": "{{access_token}}",
+						"description": "e"
+					}
+				],
+				"url": {
+					"raw": "{{backend-monitor}}/api/v1/GrupoLugar/area-cobertura",
+					"host": [
+						"{{backend-monitor}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"GrupoLugar",
+						"area-cobertura"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "BuscarBases",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code 200\", function () {",
+							"  pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Campo erro retorna boolean\", function () {",
+							"    const responseData = pm.response.json();",
+							"    ",
+							"    pm.expect(responseData).to.have.property('erro').that.is.a('boolean');",
+							"});",
+							"",
+							"pm.test(\"Cada elemento no 'dataResult' nao tem campos vazios de 'id' e 'nome' fields\", function () {",
+							"    const responseData = pm.response.json();",
+							"    ",
+							"    pm.expect(responseData.dataResult).to.be.an('array');",
+							"    responseData.dataResult.forEach(function(item) {",
+							"        pm.expect(item.id).to.exist.and.to.have.lengthOf.at.least(1, \"ID should not be empty\");",
+							"        pm.expect(item.nome).to.exist.and.to.have.lengthOf.at.least(1, \"Name should not be empty\");",
+							"    });",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "accept",
+						"value": "text/plain"
+					},
+					{
+						"key": "Authorization",
+						"value": "{{access_token}}"
+					}
+				],
+				"url": {
+					"raw": "{{backend-monitor}}/api/v1/Servico/buscarbasesporcidade",
+					"host": [
+						"{{backend-monitor}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"Servico",
+						"buscarbasesporcidade"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Board",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"",
+							"pm.test(\"Retorna application/json\", function () {",
+							"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+							"});",
+							"",
+							"",
+							"pm.test(\"Objeto retorna\", function () {",
+							"    const responseData = pm.response.json();",
+							"    ",
+							"    pm.expect(responseData.dataResult).to.exist;",
+							"});",
+							"",
+							"",
+							"pm.test(\"VeiculosSemServicos array contem campos esperados\", function () {",
+							"    const responseData = pm.response.json();",
+							"});",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "accept",
+						"value": "text/plain"
+					},
+					{
+						"key": "Authorization",
+						"value": "{{access_token}}"
+					}
+				],
+				"url": {
+					"raw": "{{backend-monitor}}/api/v1/Servico/board?cached=false",
+					"host": [
+						"{{backend-monitor}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"Servico",
+						"board"
+					],
+					"query": [
+						{
+							"key": "cached",
+							"value": "false"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GrupoLugar",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "accept",
+						"value": "text/plain"
+					},
+					{
+						"key": "Authorization",
+						"value": "{{access_token}}"
+					}
+				],
+				"url": {
+					"raw": "{{backend-monitor}}/api/v1/GrupoLugar",
+					"host": [
+						"{{backend-monitor}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"GrupoLugar"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "VeiculoLocalização",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Retorna status 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "accept",
+						"value": "text/plain"
+					},
+					{
+						"key": "Authorization",
+						"value": "{{access_token}}"
+					}
+				],
+				"url": {
+					"raw": "{{backend-monitor}}/api/v1/Veiculo/{{veiculoid}}/localizacao?padrao=monitor&checkGrafana=false&openCellEnabled=false",
+					"host": [
+						"{{backend-monitor}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"Veiculo",
+						"{{veiculoid}}",
+						"localizacao"
+					],
+					"query": [
+						{
+							"key": "padrao",
+							"value": "monitor"
+						},
+						{
+							"key": "checkGrafana",
+							"value": "false"
+						},
+						{
+							"key": "openCellEnabled",
+							"value": "false"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "VerificaPendencia",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response status code is 200\", function () {",
+							"  pm.response.to.have.status(200);",
+							"});",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "accept",
+						"value": "text/plain"
+					},
+					{
+						"key": "Authorization",
+						"value": "{{access_token}}"
+					}
+				],
+				"url": {
+					"raw": "{{backend-monitor}}/api/v1/Servico/verifica-pendencia-veiculo?veiculoId={{veiculoid}}",
+					"host": [
+						"{{backend-monitor}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"Servico",
+						"verifica-pendencia-veiculo"
+					],
+					"query": [
+						{
+							"key": "veiculoId",
+							"value": "{{veiculoid}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "ValidaPolitica",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "accept",
+						"value": "text/plain"
+					},
+					{
+						"key": "Authorization",
+						"value": "{{access_token}}"
+					}
+				],
+				"url": {
+					"raw": "{{backend-monitor}}/api/v1/Servico/servico-valida-politica/54/usuario/{{usuarioid}}",
+					"host": [
+						"{{backend-monitor}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"Servico",
+						"servico-valida-politica",
+						"54",
+						"usuario",
+						"{{usuarioid}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "CriaçãoServiço",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Servico Criado\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"let response = pm.response.json();",
+							"",
+							"    pm.environment.set(\"servicoId\", response.dataResult.id);",
+							"    console.log(\"ID capturado e salvo como 'servicoId':\", response.dataResult.id);",
+							"",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"// Função para gerar uma latitude e longitude aleatórias dentro da faixa da Grande São Paulo\r",
+							"function getRandomCoordinate(min, max) {\r",
+							"    return (Math.random() * (max - min) + min).toFixed(6); // Limita a 6 casas decimais\r",
+							"}\r",
+							"\r",
+							"// Faixas geográficas da Grande São Paulo\r",
+							"var randomLatitude = getRandomCoordinate(-24.008, -23.104);\r",
+							"var randomLongitude = getRandomCoordinate(-47.365, -46.194);\r",
+							"\r",
+							"pm.variables.set(\"enderecoLatitude\", randomLatitude);\r",
+							"pm.variables.set(\"enderecoLongitude\", randomLongitude);\r",
+							"\r",
+							"var servicoId = [\r",
+							"    {\r",
+							"        \"id\": \"2\"\r",
+							"    },\r",
+							"    {\r",
+							"        \"id\": \"4\"\r",
+							"    },\r",
+							"    {\r",
+							"        \"id\": \"9\"\r",
+							"    },\r",
+							"    {\r",
+							"        \"id\": \"10\"\r",
+							"    },\r",
+							"    {\r",
+							"        \"id\": \"33\"\r",
+							"    },\r",
+							"    {\r",
+							"        \"id\": \"41\"\r",
+							"    },\r",
+							"    {\r",
+							"        \"id\": \"54\"\r",
+							"    },\r",
+							"    {\r",
+							"        \"id\": \"58\"\r",
+							"    },\r",
+							"    {\r",
+							"        \"id\": \"60\"\r",
+							"    }\r",
+							"];\r",
+							"\r",
+							"var randomId = servicoId[Math.floor(Math.random() * servicoId.length)].id;\r",
+							"pm.environment.set(\"servicoId\", randomId);\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "accept",
+						"value": "text/plain"
+					},
+					{
+						"key": "Authorization",
+						"value": "{{access_token}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json-patch+json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"enderecoRua\": \"Rua Pedra Aparecida Marcolongo\",\r\n    \"enderecoBairro\": \"Jardim Modelo\",\r\n    \"enderecoCidade\": \"Suzano\",\r\n    \"enderecoEstado\": \"SP\",\r\n    \"enderecoLatitude\": {{enderecoLatitude}},\r\n    \"enderecoLongitude\": {{enderecoLongitude}},\r\n    \"observacao\": \"teste\",\r\n    \"servicoTipoId\": {{servicoId}},\r\n    \"veiculoSolicitanteId\": \"{{veiculoid}}\",\r\n    \"atendimentoId\": \"\",\r\n    \"veiculoSuporteId\": \"\",\r\n    \"estaEmLocalSeguro\": false,\r\n    \"provavelTroca\": null,\r\n    \"provavelRecolhimentoEmCasa\": null,\r\n    \"tags\": []\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{backend-monitor}}/api/v1/Servico",
+					"host": [
+						"{{backend-monitor}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"Servico"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"variable": [
+		{
+			"key": "usuarioid",
+			"value": ""
+		},
+		{
+			"key": "veiculoid",
+			"value": ""
+		}
+	]
+}

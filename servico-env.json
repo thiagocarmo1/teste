@@ -1,0 +1,75 @@
+{
+	"id": "d6560a4b-de2f-4828-ae9d-c4816fbfe13f",
+	"name": "Criação de serviço",
+	"values": [
+		{
+			"key": "backend-monitor",
+			"value": "https://backend-monitor.mottu.io",
+			"type": "default",
+			"enabled": true
+		},
+		{
+			"key": "customer-success",
+			"value": "https://customer-success-v2.mottu.io",
+			"type": "default",
+			"enabled": true
+		},
+		{
+			"key": "access_token",
+			"value": "",
+			"type": "any",
+			"enabled": true
+		},
+		{
+			"key": "veiculoid",
+			"value": "",
+			"type": "default",
+			"enabled": true
+		},
+		{
+			"key": "usuarioid",
+			"value": "",
+			"type": "default",
+			"enabled": true
+		},
+		{
+			"key": "servicoId",
+			"value": "",
+			"type": "any",
+			"enabled": true
+		},
+		{
+			"key": "field-service",
+			"value": "https://monitor-field-service.mottu.io",
+			"type": "default",
+			"enabled": true
+		},
+		{
+			"key": "veiculosuporte",
+			"value": "",
+			"type": "any",
+			"enabled": true
+		},
+		{
+			"key": "veiculoSuporteId",
+			"value": "",
+			"type": "any",
+			"enabled": true
+		},
+		{
+			"key": "usuariosuporte",
+			"value": "",
+			"type": "any",
+			"enabled": true
+		},
+		{
+			"key": "https://sso.mottu.io",
+			"value": "",
+			"type": "any",
+			"enabled": true
+		}
+	],
+	"_postman_variable_scope": "environment",
+	"_postman_exported_at": "2025-01-21T17:46:36.430Z",
+	"_postman_exported_using": "Postman/11.28.4"
+}
