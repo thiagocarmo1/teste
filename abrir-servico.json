@@ -132,8 +132,9 @@
 					"script": {
 						"exec": [
 							"// Array de clientes com seus respectivos ids\r",
+							"// Necessário criar endpoint que retorne essas informações\r",
 							"var clientes = [\r",
-							"    {\"usuarioid\":\"685912\",\"veiculoid\":\"49792\"},{\"usuarioid\":\"686147\",\"veiculoid\":\"49898\"},{\"usuarioid\":\"676503\",\"veiculoid\":\"43341\"},{\"usuarioid\":\"686098\",\"veiculoid\":\"49891\"},{\"usuarioid\":\"686101\",\"veiculoid\":\"49895\"},{\"usuarioid\":\"686000\",\"veiculoid\":\"49843\"},{\"usuarioid\":\"683197\",\"veiculoid\":\"48365\"},{\"usuarioid\":\"683074\",\"veiculoid\":\"48262\"},{\"usuarioid\":\"686051\",\"veiculoid\":\"49874\"},{\"usuarioid\":\"685985\",\"veiculoid\":\"49833\"},{\"usuarioid\":\"685985\",\"veiculoid\":\"49833\"},{\"usuarioid\":\"685781\",\"veiculoid\":\"49682\"},{\"usuarioid\":\"685926\",\"veiculoid\":\"49797\"},{\"usuarioid\":\"685927\",\"veiculoid\":\"49798\"},{\"usuarioid\":\"685928\",\"veiculoid\":\"49799\"},{\"usuarioid\":\"685911\",\"veiculoid\":\"49791\"},{\"usuarioid\":\"685779\",\"veiculoid\":\"49680\"},{\"usuarioid\":\"685865\",\"veiculoid\":\"49756\"},{\"usuarioid\":\"685865\",\"veiculoid\":\"49756\"},{\"usuarioid\":\"643273\",\"veiculoid\":\"16236\"},{\"usuarioid\":\"685865\",\"veiculoid\":\"49756\"},{\"usuarioid\":\"685661\",\"veiculoid\":\"49572\"},{\"usuarioid\":\"685022\",\"veiculoid\":\"49281\"},{\"usuarioid\":\"685058\",\"veiculoid\":\"49287\"},{\"usuarioid\":\"200000\",\"veiculoid\":\"49153\"},{\"usuarioid\":\"685045\",\"veiculoid\":\"49285\"},{\"usuarioid\":\"622709\",\"veiculoid\":\"251\"},{\"usuarioid\":\"383659\",\"veiculoid\":\"20328\"},{\"usuarioid\":\"684170\",\"veiculoid\":\"49088\"},{\"usuarioid\":\"685574\",\"veiculoid\":\"49488\"},{\"usuarioid\":\"685575\",\"veiculoid\":\"49489\"},{\"usuarioid\":\"685755\",\"veiculoid\":\"49662\"},{\"usuarioid\":\"685755\",\"veiculoid\":\"49662\"},{\"usuarioid\":\"684030\",\"veiculoid\":\"48552\"},{\"usuarioid\":\"684030\",\"veiculoid\":\"49070\"},{\"usuarioid\":\"685459\",\"veiculoid\":\"49392\"},{\"usuarioid\":\"684150\",\"veiculoid\":\"49083\"},{\"usuarioid\":\"684030\",\"veiculoid\":\"48552\"},{\"usuarioid\":\"685390\",\"veiculoid\":\"49334\"},{\"usuarioid\":\"685390\",\"veiculoid\":\"49334\"},{\"usuarioid\":\"684686\",\"veiculoid\":\"49209\"},{\"usuarioid\":\"685390\",\"veiculoid\":\"49334\"},{\"usuarioid\":\"669020\",\"veiculoid\":\"25896\"},{\"usuarioid\":\"684326\",\"veiculoid\":\"49118\"},{\"usuarioid\":\"651622\",\"veiculoid\":\"24671\"},{\"usuarioid\":\"640948\",\"veiculoid\":\"3120\"},{\"usuarioid\":\"640948\",\"veiculoid\":\"3120\"},{\"usuarioid\":\"675599\",\"veiculoid\":\"42383\"},{\"usuarioid\":\"675504\",\"veiculoid\":\"42268\"},{\"usuarioid\":\"685379\",\"veiculoid\":\"49327\"},{\"usuarioid\":\"685378\",\"veiculoid\":\"49326\"},{\"usuarioid\":\"684721\",\"veiculoid\":\"49221\"},{\"usuarioid\":\"509939\",\"veiculoid\":\"2792\"},{\"usuarioid\":\"509939\",\"veiculoid\":\"2792\"},{\"usuarioid\":\"509939\",\"veiculoid\":\"2792\"},{\"usuarioid\":\"509939\",\"veiculoid\":\"2792\"},{\"usuarioid\":\"509939\",\"veiculoid\":\"2792\"},{\"usuarioid\":\"2145\",\"veiculoid\":\"49293\"},{\"usuarioid\":\"133231\",\"veiculoid\":\"1955\"},{\"usuarioid\":\"684340\",\"veiculoid\":\"49128\"},{\"usuarioid\":\"684333\",\"veiculoid\":\"49124\"},{\"usuarioid\":\"684994\",\"veiculoid\":\"49263\"},{\"usuarioid\":\"683798\",\"veiculoid\":\"48948\"},{\"usuarioid\":\"582176\",\"veiculoid\":\"25515\"},{\"usuarioid\":\"582176\",\"veiculoid\":\"25515\"},{\"usuarioid\":\"582176\",\"veiculoid\":\"25515\"},{\"usuarioid\":\"684354\",\"veiculoid\":\"49143\"},{\"usuarioid\":\"684464\",\"veiculoid\":\"49197\"},{\"usuarioid\":\"373205\",\"veiculoid\":\"33593\"},{\"usuarioid\":\"624072\",\"veiculoid\":\"642\"},{\"usuarioid\":\"683859\",\"veiculoid\":\"48428\"},{\"usuarioid\":\"682804\",\"veiculoid\":\"48034\"},{\"usuarioid\":\"684251\",\"veiculoid\":\"49094\"},{\"usuarioid\":\"683657\",\"veiculoid\":\"48812\"},{\"usuarioid\":\"683658\",\"veiculoid\":\"48817\"},{\"usuarioid\":\"683863\",\"veiculoid\":\"49013\"},{\"usuarioid\":\"603236\",\"veiculoid\":\"33346\"},{\"usuarioid\":\"545553\",\"veiculoid\":\"30797\"},{\"usuarioid\":\"683484\",\"veiculoid\":\"48595\"},{\"usuarioid\":\"683840\",\"veiculoid\":\"48986\"},{\"usuarioid\":\"643658\",\"veiculoid\":\"34903\"},{\"usuarioid\":\"649120\",\"veiculoid\":\"32193\"},{\"usuarioid\":\"682952\",\"veiculoid\":\"48151\"},{\"usuarioid\":\"683310\",\"veiculoid\":\"48465\"},{\"usuarioid\":\"683565\",\"veiculoid\":\"48689\"},{\"usuarioid\":\"119936\",\"veiculoid\":\"19672\"},{\"usuarioid\":\"2\",\"veiculoid\":\"29048\"},{\"usuarioid\":\"683264\",\"veiculoid\":\"48432\"},{\"usuarioid\":\"683602\",\"veiculoid\":\"48759\"},{\"usuarioid\":\"683603\",\"veiculoid\":\"48760\"},{\"usuarioid\":\"683605\",\"veiculoid\":\"48762\"},{\"usuarioid\":\"683607\",\"veiculoid\":\"48764\"},{\"usuarioid\":\"683624\",\"veiculoid\":\"48778\"},{\"usuarioid\":\"683629\",\"veiculoid\":\"48783\"},{\"usuarioid\":\"683630\",\"veiculoid\":\"48784\"},{\"usuarioid\":\"683633\",\"veiculoid\":\"48786\"},{\"usuarioid\":\"683638\",\"veiculoid\":\"48788\"},{\"usuarioid\":\"683625\",\"veiculoid\":\"48779\"},{\"usuarioid\":\"683245\",\"veiculoid\":\"4214\"},{\"usuarioid\":\"683245\",\"veiculoid\":\"4214\"},{\"usuarioid\":\"634307\",\"veiculoid\":\"20243\"},{\"usuarioid\":\"672419\",\"veiculoid\":\"39565\"},{\"usuarioid\":\"648480\",\"veiculoid\":\"29033\"},{\"usuarioid\":\"169465\",\"veiculoid\":\"17775\"},{\"usuarioid\":\"682179\",\"veiculoid\":\"48552\"},{\"usuarioid\":\"682116\",\"veiculoid\":\"47485\"},{\"usuarioid\":\"683452\",\"veiculoid\":\"13930\"},{\"usuarioid\":\"682179\",\"veiculoid\":\"47924\"},{\"usuarioid\":\"682179\",\"veiculoid\":\"47550\"},{\"usuarioid\":\"683284\",\"veiculoid\":\"48447\"},{\"usuarioid\":\"683373\",\"veiculoid\":\"48519\"},{\"usuarioid\":\"683441\",\"veiculoid\":\"48571\"},{\"usuarioid\":\"683327\",\"veiculoid\":\"48479\"},{\"usuarioid\":\"649120\",\"veiculoid\":\"32193\"},{\"usuarioid\":\"649120\",\"veiculoid\":\"32193\"},{\"usuarioid\":\"683268\",\"veiculoid\":\"48438\"},{\"usuarioid\":\"683312\",\"veiculoid\":\"48467\"},{\"usuarioid\":\"683342\",\"veiculoid\":\"48502\"},{\"usuarioid\":\"683417\",\"veiculoid\":\"48547\"},{\"usuarioid\":\"683425\",\"veiculoid\":\"48556\"},{\"usuarioid\":\"683416\",\"veiculoid\":\"10772\"},{\"usuarioid\":\"683409\",\"veiculoid\":\"48539\"},{\"usuarioid\":\"683412\",\"veiculoid\":\"11297\"},{\"usuarioid\":\"683025\",\"veiculoid\":\"48217\"},{\"usuarioid\":\"429535\",\"veiculoid\":\"16897\"},{\"usuarioid\":\"377012\",\"veiculoid\":\"33008\"},{\"usuarioid\":\"243034\",\"veiculoid\":\"8379\"},{\"usuarioid\":\"682919\",\"veiculoid\":\"48125\"},{\"usuarioid\":\"558135\",\"veiculoid\":\"3351\"},{\"usuarioid\":\"619728\",\"veiculoid\":\"29133\"},{\"usuarioid\":\"586627\",\"veiculoid\":\"16941\"},{\"usuarioid\":\"611106\",\"veiculoid\":\"2332\"},{\"usuarioid\":\"682839\",\"veiculoid\":\"48076\"},{\"usuarioid\":\"655588\",\"veiculoid\":\"28594\"},{\"usuarioid\":\"649120\",\"veiculoid\":\"32193\"},{\"usuarioid\":\"683293\",\"veiculoid\":\"48453\"},{\"usuarioid\":\"681487\",\"veiculoid\":\"47133\"},{\"usuarioid\":\"672637\",\"veiculoid\":\"39738\"},{\"usuarioid\":\"641022\",\"veiculoid\":\"32856\"},{\"usuarioid\":\"577807\",\"veiculoid\":\"14634\"},{\"usuarioid\":\"683263\",\"veiculoid\":\"48431\"},{\"usuarioid\":\"620133\",\"veiculoid\":\"32607\"},{\"usuarioid\":\"635956\",\"veiculoid\":\"24201\"},{\"usuarioid\":\"675379\",\"veiculoid\":\"42169\"},{\"usuarioid\":\"676519\",\"veiculoid\":\"43360\"},{\"usuarioid\":\"678348\",\"veiculoid\":\"44499\"},{\"usuarioid\":\"682970\",\"veiculoid\":\"48161\"},{\"usuarioid\":\"683306\",\"veiculoid\":\"48462\"},{\"usuarioid\":\"683085\",\"veiculoid\":\"48270\"},{\"usuarioid\":\"683121\",\"veiculoid\":\"48299\"},{\"usuarioid\":\"683073\",\"veiculoid\":\"48261\"}\r",
+							"   {\"usuarioid\":\"686787\",\"veiculoid\":\"50247\"},{\"usuarioid\":\"686101\",\"veiculoid\":\"48552\"},{\"usuarioid\":\"685901\",\"veiculoid\":\"49783\"},{\"usuarioid\":\"685379\",\"veiculoid\":\"49327\"}\r",
 							"];\r",
 							"\r",
 							"// Seleção aleatória de um cliente\r",
@@ -217,6 +218,45 @@
 						"users",
 						"{{usuarioid}}",
 						"view-access"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update-Pool",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{access_token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"vehicleId\": {{veiculoid}},\r\n  \"latitude\": {{latitude}},\r\n  \"longitude\": {{longitude}},\r\n  \"gpsActive\" : 1,\r\n  \"placeId\" : 1\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://gateway-telemetries-consumer.mottu.io/Telemetry/update-pool",
+					"protocol": "https",
+					"host": [
+						"gateway-telemetries-consumer",
+						"mottu",
+						"io"
+					],
+					"path": [
+						"Telemetry",
+						"update-pool"
 					]
 				}
 			},
@@ -1267,7 +1307,7 @@
 							"let response = pm.response.json();",
 							"",
 							"    pm.environment.set(\"servicoId\", response.dataResult.id);",
-							"    console.log(\"ID capturado e salvo como 'servicoId':\", response.dataResult.id);",
+							"    console.log(\"'servicoId':\", response.dataResult.id);",
 							"",
 							""
 						],
@@ -1279,50 +1319,6 @@
 					"listen": "prerequest",
 					"script": {
 						"exec": [
-							"// Função para gerar uma latitude e longitude aleatórias dentro da faixa da Grande São Paulo\r",
-							"function getRandomCoordinate(min, max) {\r",
-							"    return (Math.random() * (max - min) + min).toFixed(6); // Limita a 6 casas decimais\r",
-							"}\r",
-							"\r",
-							"// Faixas geográficas da Grande São Paulo\r",
-							"var randomLatitude = getRandomCoordinate(-24.008, -23.104);\r",
-							"var randomLongitude = getRandomCoordinate(-47.365, -46.194);\r",
-							"\r",
-							"pm.variables.set(\"enderecoLatitude\", randomLatitude);\r",
-							"pm.variables.set(\"enderecoLongitude\", randomLongitude);\r",
-							"\r",
-							"var servicoId = [\r",
-							"    {\r",
-							"        \"id\": \"2\"\r",
-							"    },\r",
-							"    {\r",
-							"        \"id\": \"4\"\r",
-							"    },\r",
-							"    {\r",
-							"        \"id\": \"9\"\r",
-							"    },\r",
-							"    {\r",
-							"        \"id\": \"10\"\r",
-							"    },\r",
-							"    {\r",
-							"        \"id\": \"33\"\r",
-							"    },\r",
-							"    {\r",
-							"        \"id\": \"41\"\r",
-							"    },\r",
-							"    {\r",
-							"        \"id\": \"54\"\r",
-							"    },\r",
-							"    {\r",
-							"        \"id\": \"58\"\r",
-							"    },\r",
-							"    {\r",
-							"        \"id\": \"60\"\r",
-							"    }\r",
-							"];\r",
-							"\r",
-							"var randomId = servicoId[Math.floor(Math.random() * servicoId.length)].id;\r",
-							"pm.environment.set(\"servicoId\", randomId);\r",
 							""
 						],
 						"type": "text/javascript",
@@ -1348,7 +1344,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"enderecoRua\": \"Rua Pedra Aparecida Marcolongo\",\r\n    \"enderecoBairro\": \"Jardim Modelo\",\r\n    \"enderecoCidade\": \"Suzano\",\r\n    \"enderecoEstado\": \"SP\",\r\n    \"enderecoLatitude\": {{enderecoLatitude}},\r\n    \"enderecoLongitude\": {{enderecoLongitude}},\r\n    \"observacao\": \"teste\",\r\n    \"servicoTipoId\": {{servicoId}},\r\n    \"veiculoSolicitanteId\": \"{{veiculoid}}\",\r\n    \"atendimentoId\": \"\",\r\n    \"veiculoSuporteId\": \"\",\r\n    \"estaEmLocalSeguro\": false,\r\n    \"provavelTroca\": null,\r\n    \"provavelRecolhimentoEmCasa\": null,\r\n    \"tags\": []\r\n}\r\n",
+					"raw": "{\r\n    \"enderecoRua\": \"Rua Pedra Aparecida Marcolongo\",\r\n    \"enderecoBairro\": \"Jardim Modelo\",\r\n    \"enderecoCidade\": \"Suzano\",\r\n    \"enderecoEstado\": \"SP\",\r\n    \"enderecoLatitude\": {{latitude}},\r\n    \"enderecoLongitude\": {{longitude}},\r\n    \"observacao\": \"teste\",\r\n    \"servicoTipoId\": 54,\r\n    \"veiculoSolicitanteId\": \"{{veiculoid}}\",\r\n    \"atendimentoId\": \"\",\r\n    \"veiculoSuporteId\": \"\",\r\n    \"estaEmLocalSeguro\": false,\r\n    \"provavelTroca\": null,\r\n    \"provavelRecolhimentoEmCasa\": null,\r\n    \"tags\": []\r\n}\r\n",
 					"options": {
 						"raw": {
 							"language": "json"
