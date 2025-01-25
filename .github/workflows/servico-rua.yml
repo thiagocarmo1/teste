@@ -19,18 +19,55 @@ jobs:
           node --version || echo "Node.js is not installed"
           
       - name: Step 2 Install Newman-Reporter-Htmlextra
-        run: npm install -g newman-reporter-htmlextra
+        run: npm install -g newman-reporter-htmlextra jq
         
       - name: Step 3 Criar Servico
         run: |
           mkdir -p ./results
           newman run ./abrir-servico.json -e ./servico-env.json \
-            --reporters cli,htmlextra \
-            --reporter-htmlextra-export ./results/Report-Criar-Servico.html \
+            --reporters cli,json \
+            --reporter-json-export ./results/temp-criar-servico.json \
             --export-environment ./updated-env.json
-      
 
-      - name: Step 4 Archive production artifacts
+      - name: Step 4 Encaminhar Servico
+        run: |
+          newman run ./encaminhar-servico.json -e ./updated-env.json \
+            --reporters cli,json \
+            --reporter-json-export ./results/temp-encaminhar-servico.json \
+            --export-environment ./updated-env.json
+
+      - name: Step 5 Combinar os arquivos JSON
+        run: |
+          jq -s 'reduce .[] as $item ({}; .run.executions += $item.run.executions)' \
+            ./results/temp-criar-servico.json ./results/temp-encaminhar-servico.json > ./results/final-report.json
+
+      - name: Step 6 Exibir Erros no GitHub Actions
+        run: |
+          ERRORS=$(jq -r '
+            .run.executions[] | 
+            .item as $item | 
+            .assertions[]? | 
+            select(.error) | 
+            "🔴 Falha no teste: " + $item.name + 
+            "\n🔗 Endpoint: " + $item.request.url.raw + 
+            "\n❌ Erro: " + .error.message + "\n"
+          ' ./results/final-report.json)
+
+          if [ -n "$ERRORS" ]; then
+            echo "❌ Erros encontrados nos testes:"
+            echo "$ERRORS"
+            exit 1
+          else
+            echo "✅ Todos os testes passaram com sucesso!"
+          fi
+
+      - name: Step 7 Gerar Relatório
+        run: |
+          newman run ./abrir-servico.json -e ./servico-env.json \
+            --reporters htmlextra \
+            --reporter-htmlextra-export ./results/Report.html
+
+      - name: Step 8 Archive production artifacts
         uses: actions/upload-artifact@v3
         with:
           name: reports
