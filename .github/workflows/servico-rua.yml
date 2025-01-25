@@ -61,9 +61,11 @@ jobs:
             echo "✅ Todos os testes passaram com sucesso!"
           fi
 
-      - name: Step 7 Gerar Relatório Final
+      - name: Step 7 Gerar Relatório HTML
         run: |
-          newman-reporter-htmlextra ./results/final-report.json -o ./results/Report.html
+          newman run ./abrir-servico.json -e ./servico-env.json \
+            --reporters htmlextra \
+            --reporter-htmlextra-export ./results/Report.html
 
       - name: Step 8 Archive production artifacts
         uses: actions/upload-artifact@v3
