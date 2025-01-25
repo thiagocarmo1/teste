@@ -38,7 +38,7 @@ jobs:
 
       - name: Step 5 Combinar os arquivos JSON
         run: |
-          jq -s 'reduce .[] as $item ({}; .run.executions += $item.run.executions)' \
+          jq -s '.[0].run.executions += .[1].run.executions | .[0]' \
             ./results/temp-criar-servico.json ./results/temp-encaminhar-servico.json > ./results/final-report.json
 
       - name: Step 6 Exibir Erros no GitHub Actions
@@ -61,11 +61,9 @@ jobs:
             echo "✅ Todos os testes passaram com sucesso!"
           fi
 
-      - name: Step 7 Gerar Relatório
+      - name: Step 7 Gerar Relatório Final
         run: |
-          newman run ./abrir-servico.json -e ./servico-env.json \
-            --reporters htmlextra \
-            --reporter-htmlextra-export ./results/Report.html
+          newman-reporter-htmlextra ./results/final-report.json -o ./results/Report.html
 
       - name: Step 8 Archive production artifacts
         uses: actions/upload-artifact@v3
