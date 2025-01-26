@@ -36,10 +36,17 @@ jobs:
             --reporter-json-export ./results/temp-encaminhar-servico.json \
             --export-environment ./updated-env.json
 
+            - name: Step 4 Finalizar Servico
+            run: |
+              newman run ./finalizar-insumo.json -e ./updated-env.json \
+                --reporters cli,json \
+                --reporter-json-export ./results/temp-finalizar-insumo.json \
+                --export-environment ./updated-env.json
+
       - name: Step 5 Combinar os arquivos JSON
         run: |
           jq -s '.[0].run.executions += .[1].run.executions | .[0]' \
-            ./results/temp-criar-servico.json ./results/temp-encaminhar-servico.json > ./results/final-report.json
+            ./results/temp-criar-servico.json ./results/temp-encaminhar-servico.json ./results/temp-finalizar-insumo.json > ./results/final-report.json
 
       - name: Step 6 Exibir Erros no GitHub Actions
         run: |
