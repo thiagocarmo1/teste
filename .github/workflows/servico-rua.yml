@@ -70,7 +70,7 @@ jobs:
 
       - name: Step 8 Gerar Relatório HTML Final
         run: |
-          newman-reporter-htmlextra ./results/final-report.json -o ./results/Report.html
+          newman-reporter-htmlextra ./results/final-report.json ./results/Report.html
 
       - name: Step 9 Archive production artifacts
         uses: actions/upload-artifact@v3
