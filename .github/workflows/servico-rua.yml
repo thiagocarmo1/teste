@@ -36,19 +36,19 @@ jobs:
             --reporter-json-export ./results/temp-encaminhar-servico.json \
             --export-environment ./updated-env.json
 
-            - name: Step 4 Finalizar Servico
-            run: |
-              newman run ./finalizar-insumo.json -e ./updated-env.json \
-                --reporters cli,json \
-                --reporter-json-export ./results/temp-finalizar-insumo.json \
-                --export-environment ./updated-env.json
-
-      - name: Step 5 Combinar os arquivos JSON
+      - name: Step 5 Finalizar Servico
         run: |
-          jq -s '.[0].run.executions += .[1].run.executions | .[0]' \
+          newman run ./finalizar-insumo.json -e ./updated-env.json \
+            --reporters cli,json \
+            --reporter-json-export ./results/temp-finalizar-insumo.json \
+            --export-environment ./updated-env.json
+
+      - name: Step 6 Combinar os arquivos JSON
+        run: |
+          jq -s 'reduce .[] as $item ({}; .run.executions += $item.run.executions)' \
             ./results/temp-criar-servico.json ./results/temp-encaminhar-servico.json ./results/temp-finalizar-insumo.json > ./results/final-report.json
 
-      - name: Step 6 Exibir Erros no GitHub Actions
+      - name: Step 7 Exibir Erros no GitHub Actions
         run: |
           ERRORS=$(jq -r '
             .run.executions[] | 
@@ -68,13 +68,13 @@ jobs:
             echo "✅ Todos os testes passaram com sucesso!"
           fi
 
-      - name: Step 7 Gerar Relatório HTML
+      - name: Step 8 Gerar Relatório HTML
         run: |
           newman run ./abrir-servico.json -e ./servico-env.json \
             --reporters htmlextra \
             --reporter-htmlextra-export ./results/Report.html
 
-      - name: Step 8 Archive production artifacts
+      - name: Step 9 Archive production artifacts
         uses: actions/upload-artifact@v3
         with:
           name: reports
