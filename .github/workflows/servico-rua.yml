@@ -21,37 +21,17 @@ jobs:
       - name: Install Newman-Reporter-Htmlextra
         run: npm install -g newman-reporter-htmlextra
 
-      - name: Criar Servico
+      - name: Servico
         run: |
-          mkdir -p ./results
-          newman run ./abrir-servico.json -e ./servico-env.json \
-            --reporters cli,htmlextra \
-            --reporter-htmlextra-export ./results/criar-servico.html \
-            --export-environment ./updated-env.json
+          newman run ./abrir-servico.json -e ./servico-env.json --reporters cli,htmlextra --reporter-htmlextra-export ./results/final-report.html --export-environment ./updated-env.json
+          newman run ./encaminhar-servico.json -e ./updated-env.json --reporters cli,htmlextra --reporter-htmlextra-export ./results/final-report.html --export-environment ./updated-env.json
+          newman run ./finalizar-insumo.json -e ./updated-env.json --reporters cli,htmlextra --reporter-htmlextra-export ./results/final-report.html --export-environment ./updated-env.json
 
-      - name: Encaminhar Servico
-        run: |
-          newman run ./encaminhar-servico.json -e ./updated-env.json \
-            --reporters cli,htmlextra \
-            --reporter-htmlextra-export ./results/encaminhar-servico.html \
-            --export-environment ./updated-env.json
-
-      - name: Finalizar Servico
-        run: |
-          newman run ./finalizar-insumo.json -e ./updated-env.json \
-            --reporters cli,htmlextra \
-            --reporter-htmlextra-export ./results/finalizar-insumo.html \
-            --export-environment ./updated-env.json
-
-      - name: Combinar os arquivos HTML (opcional)
-        run: |
-          cat ./results/criar-servico.html ./results/encaminhar-servico.html ./results/finalizar-insumo.html > ./results/final-report.html
-          
       - name: Archive production artifacts
         uses: actions/upload-artifact@v4
         with:
           name: report-html
-          path: ./results/
+          path: ./results/final-report.html
 
       - name: Notificar Microsoft Teams
         if: always()
@@ -69,7 +49,7 @@ jobs:
               "@context": "http://schema.org/extensions"
               "themeColor": "$COLOR",
               "summary": "Status do Workflow",
-              "sections": [{
+              "sections": [ {
                 "activityTitle": "Status do Workflow",
                 "activitySubtitle": "${{ github.workflow }}",
                 "facts": [{
