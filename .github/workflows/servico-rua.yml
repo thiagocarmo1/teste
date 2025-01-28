@@ -49,7 +49,7 @@ jobs:
 
       - name: Exibir Erros no GitHub Actions
         run: |
-          if grep "failure" ./results/final-report.html; then
+          if grep -i -A 5 "failure" ./results/final-report.html | grep -vE "background-color|--failure|Render the Description Markdown"; then
             echo "❌ Erros encontrados nos testes"
           else
             echo "✅ Todos os testes passaram com sucesso"
