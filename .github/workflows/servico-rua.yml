@@ -68,17 +68,13 @@ jobs:
             echo "✅ Todos os testes passaram com sucesso!"
           fi
 
-      - name: Step 8 Gerar Relatório HTML Final
-        run: |
-          npm run gerar-report
-
-      - name: Step 9 Archive production artifacts
+      - name: Step 8 Archive production artifacts
         uses: actions/upload-artifact@v3
         with:
           name: report-html
           path: ./results/
 
-      - name: Step 10 Notificar Microsoft Teams
+      - name: Step 9 Notificar Microsoft Teams
         if: always()
         run: |
           if [ "${{ job.status }}" == "success" ]; then
