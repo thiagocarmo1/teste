@@ -46,15 +46,7 @@ jobs:
       - name: Combinar os arquivos HTML (opcional)
         run: |
           cat ./results/criar-servico.html ./results/encaminhar-servico.html ./results/finalizar-insumo.html > ./results/final-report.html
-
-      - name: Exibir Erros no GitHub Actions
-        run: |
-          grep -i -A 5 "failure" ./results/final-report.html | grep -vE "(background-color|--failure|Render the Description Markdown|</script>|</body>|</html>)"
-            echo "❌ Erros encontrados nos testes"
-          else
-            echo "✅ Todos os testes passaram com sucesso"
-          fi
-
+          
       - name: Archive production artifacts
         uses: actions/upload-artifact@v4
         with:
