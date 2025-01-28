@@ -17,11 +17,23 @@ jobs:
         run: |
           newman --version || echo "Newman is not installed"
           node --version || echo "Node.js is not installed"
-          
-      - name: Step 2 Install Newman-Reporter-Htmlextra
+
+      - name: Step 2 Cache Node.js modules
+        id: cache-node-modules
+        uses: actions/cache@v3
+        with:
+          path: node_modules
+          key: node-modules-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            node-modules-${{ runner.os }}-
+
+      - name: Step 3 Install Newman-Reporter-Htmlextra
         run: npm install -g newman-reporter-htmlextra
-        
-      - name: Step 3 Criar Servico
+
+      - name: Step 4 Install dependencies
+        run: npm install
+
+      - name: Step 5 Criar Servico
         run: |
           mkdir -p ./results
           newman run ./abrir-servico.json -e ./servico-env.json \
@@ -29,26 +41,26 @@ jobs:
             --reporter-json-export ./results/temp-criar-servico.json \
             --export-environment ./updated-env.json
 
-      - name: Step 4 Encaminhar Servico
+      - name: Step 6 Encaminhar Servico
         run: |
           newman run ./encaminhar-servico.json -e ./updated-env.json \
             --reporters cli,json \
             --reporter-json-export ./results/temp-encaminhar-servico.json \
             --export-environment ./updated-env.json
 
-      - name: Step 5 Finalizar Servico
+      - name: Step 7 Finalizar Servico
         run: |
           newman run ./finalizar-insumo.json -e ./updated-env.json \
             --reporters cli,json \
             --reporter-json-export ./results/temp-finalizar-insumo.json \
             --export-environment ./updated-env.json
 
-      - name: Step 6 Combinar os arquivos JSON
+      - name: Step 8 Combinar os arquivos JSON
         run: |
           jq -s 'reduce .[] as $item ({}; .run.executions += $item.run.executions)' \
             ./results/temp-criar-servico.json ./results/temp-encaminhar-servico.json ./results/temp-finalizar-insumo.json > ./results/final-report.json
 
-      - name: Step 7 Exibir Erros no GitHub Actions
+      - name: Step 9 Exibir Erros no GitHub Actions
         run: |
           ERRORS=$(jq -r '
             .run.executions[] | 
@@ -68,12 +80,55 @@ jobs:
             echo "✅ Todos os testes passaram com sucesso!"
           fi
 
-      - name: Step 8 Gerar Relatório HTML Final
+      - name: Step 10 Gerar Relatório HTML Final
         run: |
-          newman-reporter-htmlextra ./results/final-report.json ./results/Report.html
+          npm run gerar-report
 
-      - name: Step 9 Archive production artifacts
+      - name: Step 11 Archive production artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: reports
+          name: report-html
           path: ./results/
+
+      - name: Step 12 Notificar Microsoft Teams
+        if: always()
+        run: |
+          if [ "${{ job.status }}" == "success" ]; then
+            STATUS="✅ Sucesso"
+            COLOR="00FF00"
+          else
+            STATUS="❌ Falha"
+            COLOR="FF0000"
+          fi
+
+          PAYLOAD=$(cat <<EOF
+          {
+            "@type": "MessageCard",
+            "@context": "http://schema.org/extensions",
+            "themeColor": "$COLOR",
+            "summary": "Status do Workflow",
+            "sections": [{
+              "activityTitle": "Status do Workflow",
+              "activitySubtitle": "${{ github.workflow }}",
+              "facts": [{
+                "name": "Repositório",
+                "value": "${{ github.repository }}"
+              }, {
+                "name": "Branch",
+                "value": "${{ github.ref }}"
+              }, {
+                "name": "Status",
+                "value": "$STATUS"
+              }, {
+                "name": "Detalhes",
+                "value": "[Ver Workflow](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})"
+              }],
+              "markdown": true
+            }]
+          }
+          EOF
+          )
+
+          curl -X POST -H "Content-Type: application/json" \
+            -d "$PAYLOAD" \
+            "${{ secrets.TEAMS_WEBHOOK_URL }}"
