@@ -11,107 +11,87 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
-      - name: Step 1 Check version Newman and Node
+      - name: Cache Newman dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-newman-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-newman-
+
+      - name: Install dependencies
+        run: |
+          npm install -g newman newman-reporter-htmlextra
+
+      - name: Check version Newman and Node
         run: |
           newman --version || echo "Newman is not installed"
           node --version || echo "Node.js is not installed"
 
-      - name: Step 2 Install Newman-Reporter-Htmlextra
-        run: npm install -g newman-reporter-htmlextra
-
-      - name: Step 3 Criar Servico
+      - name: Run Newman tests
         run: |
           mkdir -p ./results
-          newman run ./abrir-servico.json -e ./servico-env.json \
-            --reporters cli,json \
-            --reporter-json-export ./results/temp-criar-servico.json \
-            --export-environment ./updated-env.json
+          for file in "abrir-servico.json" "encaminhar-servico.json" "finalizar-insumo.json"; do
+            newman run ./$file -e ./servico-env.json \
+              --reporters cli,json \
+              --reporter-json-export ./results/temp-$(basename $file .json).json
+          done
 
-      - name: Step 4 Encaminhar Servico
-        run: |
-          newman run ./encaminhar-servico.json -e ./updated-env.json \
-            --reporters cli,json \
-            --reporter-json-export ./results/temp-encaminhar-servico.json \
-            --export-environment ./updated-env.json
-
-      - name: Step 5 Finalizar Servico
-        run: |
-          newman run ./finalizar-insumo.json -e ./updated-env.json \
-            --reporters cli,json \
-            --reporter-json-export ./results/temp-finalizar-insumo.json \
-            --export-environment ./updated-env.json
-
-      - name: Step 6 Combinar os arquivos JSON
+      - name: Combine JSON reports
         run: |
           jq -s 'reduce .[] as $item ({}; .run.executions += $item.run.executions)' \
-            ./results/temp-criar-servico.json ./results/temp-encaminhar-servico.json ./results/temp-finalizar-insumo.json > ./results/final-report.json
+            ./results/temp-*.json > ./results/final-report.json
 
-      - name: Step 7 Exibir Erros no GitHub Actions
+      - name: Check for errors in Newman reports
         run: |
-          ERRORS=$(jq -r '
-            .run.executions[] | 
-            .item as $item | 
-            .assertions[]? | 
-            select(.error) | 
-            "🔴 Falha no teste: " + $item.name + 
-            "\n🔗 Endpoint: " + $item.request.url.raw + 
-            "\n❌ Erro: " + .error.message + "\n"
-          ' ./results/final-report.json)
-
-          if [ -n "$ERRORS" ]; then
-            echo "❌ Erros encontrados nos testes:"
-            echo "$ERRORS"
+          if jq -e '.run.failures | length > 0' ./results/final-report.json > /dev/null; then
+            echo "❌ Erros encontrados nos testes!"
             exit 1
           else
             echo "✅ Todos os testes passaram com sucesso!"
           fi
 
-      - name: Step 8 Archive production artifacts
+      - name: Archive production artifacts
         uses: actions/upload-artifact@v3
         with:
           name: report-html
           path: ./results/
 
-      - name: Step 9 Notificar Microsoft Teams
+      - name: Notify Microsoft Teams
         if: always()
         run: |
+          STATUS="❌ Falha"
+          COLOR="FF0000"
           if [ "${{ job.status }}" == "success" ]; then
             STATUS="✅ Sucesso"
             COLOR="00FF00"
-          else
-            STATUS="❌ Falha"
-            COLOR="FF0000"
           fi
 
-          PAYLOAD=$(cat <<EOF
-          {
-            "@type": "MessageCard",
-            "@context": "http://schema.org/extensions",
-            "themeColor": "$COLOR",
-            "summary": "Status do Workflow",
-            "sections": [{
-              "activityTitle": "Status do Workflow",
-              "activitySubtitle": "${{ github.workflow }}",
-              "facts": [{
-                "name": "Repositório",
-                "value": "${{ github.repository }}"
-              }, {
-                "name": "Branch",
-                "value": "${{ github.ref }}"
-              }, {
-                "name": "Status",
-                "value": "$STATUS"
-              }, {
-                "name": "Detalhes",
-                "value": "[Ver Workflow](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})"
-              }],
-              "markdown": true
-            }]
-          }
-          EOF
-          )
+          PAYLOAD=$(jq -n \
+            --arg status "$STATUS" \
+            --arg color "$COLOR" \
+            --arg repository "${{ github.repository }}" \
+            --arg ref "${{ github.ref }}" \
+            --arg run_id "${{ github.run_id }}" \
+            '{
+              "@type": "MessageCard",
+              "@context": "http://schema.org/extensions",
+              "themeColor": $color,
+              "summary": "Status do Workflow",
+              "sections": [{
+                "activityTitle": "Status do Workflow",
+                "activitySubtitle": "Workflow",
+                "facts": [
+                  {"name": "Repositório", "value": $repository},
+                  {"name": "Branch", "value": $ref},
+                  {"name": "Status", "value": $status},
+                  {"name": "Detalhes", "value": "https://github.com/" + $repository + "/actions/runs/" + $run_id}
+                ],
+                "markdown": true
+              }]
+            }')
 
           curl -X POST -H "Content-Type: application/json" \
             -d "$PAYLOAD" \
