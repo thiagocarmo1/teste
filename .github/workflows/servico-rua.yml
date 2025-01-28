@@ -59,32 +59,33 @@ jobs:
       - name: Step 9 Notificar Microsoft Teams
         if: always()
         run: |
-          STATUS="❌ Falha"
-          COLOR="FF0000"
-          if [ "${{ job.status }}" == "success" ]; then
-            STATUS="✅ Sucesso"
-            COLOR="00FF00"
-          fi
-          PAYLOAD=$(jq -n \
-            --arg status "$STATUS" \
-            --arg color "$COLOR" \
-            --arg repository "${{ github.repository }}" \
-            --arg ref "${{ github.ref }}" \
-            --arg run_id "${{ github.run_id }}" \
-            '{
-              "@type": "MessageCard",
-              "@context": "http://schema.org/extensions",
-              "themeColor": $color,
-              "summary": "Status do Workflow",
-              "sections": [{
-                "activityTitle": "Status do Workflow",
-                "activitySubtitle": "Workflow",
-                "facts": [
-                  {"name": "Repositório", "value": $repository},
-                  {"name": "Branch", "value": $ref},
-                  {"name": "Status", "value": $status},
-                  {"name": "Detalhes", "value": "https://github.com/" + $repository + "/actions/runs/" + $run_id}
-                ],
-                "markdown": true
-              }]
-            }')
+            STATUS="❌ Falha"
+            COLOR="FF0000"
+            if [ "${{ job.status }}" == "success" ]; then
+              STATUS="✅ Sucesso"
+              COLOR="00FF00"
+            fi
+            PAYLOAD=$(jq -n \
+              --arg status "$STATUS" \
+              --arg color "$COLOR" \
+              --arg repository "${{ github.repository }}" \
+              --arg ref "${{ github.ref }}" \
+              --arg run_id "${{ github.run_id }}" \
+              '{
+                "@type": "MessageCard",
+                "@context": "http://schema.org/extensions",
+                "themeColor": $color,
+                "summary": "Status do Workflow",
+                "sections": [{
+                  "activityTitle": "Status do Workflow",
+                  "activitySubtitle": "Workflow",
+                  "facts": [
+                    {"name": "Repositório", "value": $repository},
+                    {"name": "Branch", "value": $ref},
+                    {"name": "Status", "value": $status},
+                    {"name": "Detalhes", "value": ("https://github.com/" + $repository + "/actions/runs/" + $run_id)}
+                  ],
+                  "markdown": true
+                }]
+              }')
+            echo "$PAYLOAD"
