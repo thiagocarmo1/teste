@@ -49,10 +49,10 @@ jobs:
 
       - name: Exibir Erros no GitHub Actions
         run: |
-          if grep -q "failure" ./results/final-report.html; then
-            echo "❌ Erros encontrados nos testes!"
+          if grep "failure" ./results/final-report.html; then
+            echo "❌ Erros encontrados nos testes"
           else
-            echo "✅ Todos os testes passaram com sucesso!"
+            echo "✅ Todos os testes passaram com sucesso"
           fi
 
       - name: Archive production artifacts
@@ -74,7 +74,7 @@ jobs:
             PAYLOAD=$(cat <<EOF
             {
               "@type": "MessageCard",
-              "@context": "http://schema.org/extensions",
+              "@context": "http://schema.org/extensions"
               "themeColor": "$COLOR",
               "summary": "Status do Workflow",
               "sections": [{
