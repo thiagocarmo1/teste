@@ -13,32 +13,32 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Step 1 Check version Newman and Node
+      - name: Check version Newman and Node
         run: |
           newman --version || echo "Newman is not installed"
           node --version || echo "Node.js is not installed"
       - name: Step 2 Install Newman-Reporter-Htmlextra
         run: npm install -g newman-reporter-htmlextra
-      - name: Step 3 Criar Servico
+      - name: Criar Servico
         run: |
           mkdir -p ./results
           newman run ./abrir-servico.json -e ./servico-env.json \
             --reporters cli,json \
             --reporter-json-export ./results/temp-criar-servico.json \
             --export-environment ./updated-env.json
-      - name: Step 4 Encaminhar Servico
+      - name: Encaminhar Servico
         run: |
           newman run ./encaminhar-servico.json -e ./updated-env.json \
             --reporters cli,json \
             --reporter-json-export ./results/temp-encaminhar-servico.json \
             --export-environment ./updated-env.json
-      - name: Step 5 Finalizar Servico
+      - name: Finalizar Servico
         run: |
           newman run ./finalizar-insumo.json -e ./updated-env.json \
             --reporters cli,json \
             --reporter-json-export ./results/temp-finalizar-insumo.json \
             --export-environment ./updated-env.json
-      - name: Step 6 Combinar os arquivos JSON
+      - name: Combinar os arquivos JSON
         run: |
           jq -s 'reduce .[] as $item ({}; .run.executions += $item.run.executions)' \
             ./results/temp-criar-servico.json ./results/temp-encaminhar-servico.json ./results/temp-finalizar-insumo.json > ./results/final-report.json
@@ -50,13 +50,13 @@ jobs:
           else
             echo "✅ Todos os testes passaram com sucesso!"
           fi
-      - name: Step 8 Archive production artifacts
+      - name: Archive production artifacts
         uses: actions/upload-artifact@v3
         with:
           name: report-html
           path: ./results/
 
-      - name: Step 9 Notificar Microsoft Teams
+      - name: Notificar Microsoft Teams
         if: always()
         run: |
             STATUS="❌ Falha"
