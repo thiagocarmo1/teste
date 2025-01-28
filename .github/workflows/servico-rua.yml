@@ -17,39 +17,45 @@ jobs:
         run: |
           newman --version || echo "Newman is not installed"
           node --version || echo "Node.js is not installed"
-      - name: Step 2 Install Newman-Reporter-Htmlextra
+
+      - name: Install Newman-Reporter-Htmlextra
         run: npm install -g newman-reporter-htmlextra
+
       - name: Criar Servico
         run: |
           mkdir -p ./results
           newman run ./abrir-servico.json -e ./servico-env.json \
-            --reporters cli,json \
-            --reporter-json-export ./results/temp-criar-servico.json \
+            --reporters cli,htmlextra \
+            --reporter-htmlextra-export ./results/criar-servico.html \
             --export-environment ./updated-env.json
+
       - name: Encaminhar Servico
         run: |
           newman run ./encaminhar-servico.json -e ./updated-env.json \
-            --reporters cli,json \
-            --reporter-json-export ./results/temp-encaminhar-servico.json \
+            --reporters cli,htmlextra \
+            --reporter-htmlextra-export ./results/encaminhar-servico.html \
             --export-environment ./updated-env.json
+
       - name: Finalizar Servico
         run: |
           newman run ./finalizar-insumo.json -e ./updated-env.json \
-            --reporters cli,json \
-            --reporter-json-export ./results/temp-finalizar-insumo.json \
+            --reporters cli,htmlextra \
+            --reporter-htmlextra-export ./results/finalizar-insumo.html \
             --export-environment ./updated-env.json
-      - name: Combinar os arquivos JSON
+
+      - name: Combinar os arquivos HTML (opcional)
         run: |
-          jq -s 'reduce .[] as $item ({}; .run.executions += $item.run.executions)' \
-            ./results/temp-criar-servico.json ./results/temp-encaminhar-servico.json ./results/temp-finalizar-insumo.json > ./results/final-report.json
-      - name: Step 7 Exibir Erros no GitHub Actions
+          cat ./results/criar-servico.html ./results/encaminhar-servico.html ./results/finalizar-insumo.html > ./results/final-report.html
+
+      - name: Exibir Erros no GitHub Actions
         run: |
-          if jq -e '.run.failures | length > 0' ./results/final-report.json > /dev/null; then
+          if grep -q "failure" ./results/final-report.html; then
             echo "❌ Erros encontrados nos testes!"
             exit 1
           else
             echo "✅ Todos os testes passaram com sucesso!"
           fi
+
       - name: Archive production artifacts
         uses: actions/upload-artifact@v4
         with:
